@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"net/http"
+	"strconv"
+	"sync"
+	"time"
 )
 
 var (
@@ -18,8 +18,13 @@ var (
 			return true
 		},
 	}
-	//WebDataMap 用于存储各个网站的在线用户量
-	WebDataMap = make(map[string]int)
+	//rwWDM 用于存储各个网站的在线用户量
+	rwWDM = struct {
+		sync.RWMutex
+		data map[string]int
+	}{
+		data: make(map[string]int),
+	}
 	//CloseClearMap 通知协程关闭
 	CloseClearMap chan byte
 )
@@ -47,21 +52,24 @@ func main() {
 
 //WebSocketHandler /ws/onlineServer接口函数
 func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Request) {
-	WebDataMap[clientURL]++
+	rwWDM.Lock()
+	rwWDM.data[clientURL]++
+	rwWDM.Unlock()
 	// 应答客户端告知升级连接为websocket
 	wsSocket, err := wsUpgrader.Upgrade(resp, req, nil)
 	if err != nil {
 		return
 	}
+	//结束后关闭websocket连接
 	defer func() {
 		_ = wsSocket.Close()
-		if err := recover(); err != nil {
-		}
 	}()
-	//发送在线人数给客户端，相当于2秒检测一遍用户是否还在
+	////发送在线人数给客户端，相当于2秒检测一遍用户是否还在
 	for {
-		if err = wsSocket.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(WebDataMap[clientURL]))); err != nil {
-			WebDataMap[clientURL]--
+		if err = wsSocket.WriteMessage(websocket.TextMessage, getNewestNum(clientURL)); err != nil {
+			rwWDM.Lock()
+			rwWDM.data[clientURL]--
+			rwWDM.Unlock()
 			return
 		}
 		time.Sleep(time.Second * 2)
@@ -73,15 +81,24 @@ func ClearMap() {
 	for {
 		select {
 		case <-CloseClearMap:
-			fmt.Println("协程已关闭")
 			return
 		default:
-			for k, v := range WebDataMap {
+			rwWDM.Lock()
+			for k, v := range rwWDM.data {
 				if v <= 0 {
-					delete(WebDataMap, k)
+					delete(rwWDM.data, k)
 				}
 			}
+			rwWDM.Unlock()
 		}
-		time.Sleep(time.Minute * 30)
+		time.Sleep(time.Minute * 60)
 	}
+}
+
+//getNewestNum 获取最新在线人数
+func getNewestNum(k string) []byte {
+	rwWDM.RLock()
+	n := rwWDM.data[k]
+	rwWDM.RUnlock()
+	return []byte(string(strconv.Itoa(n)))
 }

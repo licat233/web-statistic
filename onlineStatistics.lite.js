@@ -26,12 +26,10 @@ function LiteMain() {
 }
 
 function CreateView() {
-    var sty = document.createElement("style");
-    var csscontent = document.createTextNode("#onlineview{bottom: 0px;text-align:center;color:#3A3A3A;font-size:13px}")
-    sty.appendChild(csscontent)
     var d = document.createElement("div");
     d.id = "onlineview";
     d.style.bottom = "0px";
+    d.style = "bottom: 0px;text-align:center;color:#3A3A3A;font-size:13px";
     document.body.appendChild(d);
 }
 
