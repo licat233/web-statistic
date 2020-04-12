@@ -20,15 +20,20 @@ var (
 	}
 	//WebDataMap 用于存储各个网站的在线用户量
 	WebDataMap = make(map[string]int)
+	//CloseClearMap 通知协程关闭
+	CloseClearMap chan byte
 )
 
 func main() {
 	go ClearMap()
+	defer func() {
+		close(CloseClearMap)
+	}()
 	Router := gin.Default()
 	Router.GET("/ws/onlineServer", func(c *gin.Context) {
-		if(c.Query("weburl")==""){
-			c.JSON(200,gin.H{
-				"msg":"滚！！！",
+		if c.Query("weburl") == "" {
+			c.JSON(200, gin.H{
+				"msg": "滚！！！",
 			})
 			return
 		}
@@ -49,8 +54,8 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 		return
 	}
 	defer func() {
-		_=wsSocket.Close()
-		if err:=recover();err!=nil{
+		_ = wsSocket.Close()
+		if err := recover(); err != nil {
 		}
 	}()
 	//发送在线人数给客户端，相当于2秒检测一遍用户是否还在
@@ -66,9 +71,15 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 //ClearMap 协程，用于处理无用的键值对
 func ClearMap() {
 	for {
-		for k, v := range WebDataMap {
-			if v <= 0 {
-				delete(WebDataMap, k)
+		select {
+		case <-CloseClearMap:
+			fmt.Println("协程已关闭")
+			return
+		default:
+			for k, v := range WebDataMap {
+				if v <= 0 {
+					delete(WebDataMap, k)
+				}
 			}
 		}
 		time.Sleep(time.Minute * 30)
