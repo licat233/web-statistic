@@ -1,0 +1,67 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "mKall8xfKBPL/a5Ji//i968rLsY=",
+			"path": "github.com/gin-contrib/sse",
+			"revision": "43f0f29dbd2b3f0feeebff91fd9cda22db296938",
+			"revisionTime": "2019-09-05T05:13:34Z"
+		},
+		{
+			"checksumSHA1": "7Hb45CZ89Oyhro9g8X1rVKxB7zU=",
+			"path": "github.com/gin-gonic/gin",
+			"revision": "9b3477ef9d2c6a611c9c00cc18aba5a6ba6a7641",
+			"revisionTime": "2019-12-20T06:01:58Z"
+		},
+		{
+			"checksumSHA1": "GGPZmYXmNyu6Ib9qkFEyUO3ivCE=",
+			"path": "github.com/gin-gonic/gin/binding",
+			"revision": "9b3477ef9d2c6a611c9c00cc18aba5a6ba6a7641",
+			"revisionTime": "2019-12-20T06:01:58Z"
+		},
+		{
+			"checksumSHA1": "GAHho8qMLbDfGoD4w7SX7ZRT56U=",
+			"path": "github.com/gin-gonic/gin/internal/json",
+			"revision": "9b3477ef9d2c6a611c9c00cc18aba5a6ba6a7641",
+			"revisionTime": "2019-12-20T06:01:58Z"
+		},
+		{
+			"checksumSHA1": "GUNvdFcuIIF15k9SBg/T7+IQNOs=",
+			"path": "github.com/gin-gonic/gin/render",
+			"revision": "9b3477ef9d2c6a611c9c00cc18aba5a6ba6a7641",
+			"revisionTime": "2019-12-20T06:01:58Z"
+		},
+		{
+			"checksumSHA1": "cMMG97ehMrVNuNbf7x5pGhuZMOI=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "ed6926b37a637426117ccab59282c3839528a700",
+			"revisionTime": "2019-10-22T19:55:53Z"
+		},
+		{
+			"checksumSHA1": "zmk4lWpYrZl5zc9Za1ESlEnQHLU=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "b65e62901fc1c0d968042419e74789f6af455eb9",
+			"revisionTime": "2020-03-19T17:50:51Z"
+		},
+		{
+			"checksumSHA1": "nFLN1tyLs+qMmZYck7PR9d9Bikg=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "31745d66dd679ac0ac4f8d3ecff168fce6170c6a",
+			"revisionTime": "2019-12-11T04:17:20Z"
+		},
+		{
+			"checksumSHA1": "Y4aQHD5/c/TidHFwcQLbrUuAO34=",
+			"path": "github.com/ugorji/go/codec",
+			"revision": "42bc974514ff101a54c6b72a0e4dee29d96c0b26",
+			"revisionTime": "2019-08-12T10:43:08Z"
+		},
+		{
+			"checksumSHA1": "jqxUk8Hr4ZJt4+vY46Ctgl+7uPc=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "1f64d6156d11335c3f22d9330b0ad14fc1e789ce",
+			"revisionTime": "2019-11-19T21:27:36Z"
+		}
+	],
+	"rootPath": "WebStatistics"
+}
