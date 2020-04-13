@@ -43,7 +43,7 @@ func main() {
 		WebSocketHandler(c.Query("weburl"), c.Writer, c.Request)
 	})
 	if err := Router.Run(":8866"); err != nil {
-		fmt.Println("Gin run failed")
+		fmt.Println("Gin run failed:",err)
 		return
 	}
 }
