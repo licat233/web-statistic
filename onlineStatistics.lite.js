@@ -20,7 +20,7 @@ function LiteMain() {
     ws.onclose = function () {
         console.info("WebSocket connection is closed!")
     }
-    window.onbeforeunload = function () {
+    window.onunload = window.onbeforeunload = function () {
         ws.close();
     }
 }
