@@ -31,9 +31,7 @@ var (
 
 func main() {
 	go ClearMap()
-	defer func() {
-		close(CloseClearMap)
-	}()
+	gin.SetMode(gin.ReleaseMode)
 	Router := gin.Default()
 	Router.GET("/ws/onlineServer", func(c *gin.Context) {
 		if c.Query("weburl") == "" {
