@@ -10,31 +10,36 @@
 [![Sourcegraph](https://sourcegraph.com/github.com/gin-gonic/gin/-/badge.svg)](https://sourcegraph.com/github.com/gin-gonic/gin?badge)
 [![Open Source Helpers](https://www.codetriage.com/gin-gonic/gin/badges/users.svg)](https://www.codetriage.com/gin-gonic/gin)
 [![Release](https://img.shields.io/github/release/gin-gonic/gin.svg?style=flat-square)](https://github.com/gin-gonic/gin/releases)
+[![TODOs](https://badgen.net/https/api.tickgit.com/badgen/github.com/gin-gonic/gin)](https://www.tickgit.com/browse?repo=github.com/gin-gonic/gin)
 
 Gin is a web framework written in Go (Golang). It features a martini-like API with performance that is up to 40 times faster thanks to [httprouter](https://github.com/julienschmidt/httprouter). If you need performance and good productivity, you will love Gin.
 
 
 ## Contents
 
-- [Installation](#installation)
-- [Prerequisite](#prerequisite)
-- [Quick start](#quick-start)
-- [Benchmarks](#benchmarks)
-- [Gin v1.stable](#gin-v1-stable)
-- [Build with jsoniter](#build-with-jsoniter)
-- [API Examples](#api-examples)
-    - [Using GET,POST,PUT,PATCH,DELETE and OPTIONS](#using-get-post-put-patch-delete-and-options)
+- [Gin Web Framework](#gin-web-framework)
+  - [Contents](#contents)
+  - [Installation](#installation)
+  - [Quick start](#quick-start)
+  - [Benchmarks](#benchmarks)
+  - [Gin v1. stable](#gin-v1-stable)
+  - [Build with jsoniter](#build-with-jsoniter)
+  - [API Examples](#api-examples)
+    - [Using GET, POST, PUT, PATCH, DELETE and OPTIONS](#using-get-post-put-patch-delete-and-options)
     - [Parameters in path](#parameters-in-path)
     - [Querystring parameters](#querystring-parameters)
     - [Multipart/Urlencoded Form](#multiparturlencoded-form)
     - [Another example: query + post form](#another-example-query--post-form)
     - [Map as querystring or postform parameters](#map-as-querystring-or-postform-parameters)
     - [Upload files](#upload-files)
+      - [Single file](#single-file)
+      - [Multiple files](#multiple-files)
     - [Grouping routes](#grouping-routes)
     - [Blank Gin without middleware by default](#blank-gin-without-middleware-by-default)
     - [Using middleware](#using-middleware)
     - [How to write log file](#how-to-write-log-file)
     - [Custom Log Format](#custom-log-format)
+    - [Controlling Log output coloring](#controlling-log-output-coloring)
     - [Model binding and validation](#model-binding-and-validation)
     - [Custom Validators](#custom-validators)
     - [Only Bind Query String](#only-bind-query-string)
@@ -44,10 +49,16 @@ Gin is a web framework written in Go (Golang). It features a martini-like API wi
     - [Bind HTML checkboxes](#bind-html-checkboxes)
     - [Multipart/Urlencoded binding](#multiparturlencoded-binding)
     - [XML, JSON, YAML and ProtoBuf rendering](#xml-json-yaml-and-protobuf-rendering)
-    - [JSONP rendering](#jsonp)
+      - [SecureJSON](#securejson)
+      - [JSONP](#jsonp)
+      - [AsciiJSON](#asciijson)
+      - [PureJSON](#purejson)
     - [Serving static files](#serving-static-files)
     - [Serving data from reader](#serving-data-from-reader)
     - [HTML rendering](#html-rendering)
+      - [Custom Template renderer](#custom-template-renderer)
+      - [Custom Delimiters](#custom-delimiters)
+      - [Custom Template Funcs](#custom-template-funcs)
     - [Multitemplate](#multitemplate)
     - [Redirects](#redirects)
     - [Custom Middleware](#custom-middleware)
@@ -56,15 +67,15 @@ Gin is a web framework written in Go (Golang). It features a martini-like API wi
     - [Custom HTTP configuration](#custom-http-configuration)
     - [Support Let's Encrypt](#support-lets-encrypt)
     - [Run multiple service using Gin](#run-multiple-service-using-gin)
-    - [Graceful restart or stop](#graceful-restart-or-stop)
+    - [Graceful shutdown or restart](#graceful-shutdown-or-restart)
     - [Build a single binary with templates](#build-a-single-binary-with-templates)
     - [Bind form-data request with custom struct](#bind-form-data-request-with-custom-struct)
     - [Try to bind body into different structs](#try-to-bind-body-into-different-structs)
     - [http2 server push](#http2-server-push)
     - [Define format for the log of routes](#define-format-for-the-log-of-routes)
     - [Set and get a cookie](#set-and-get-a-cookie)
-- [Testing](#testing)
-- [Users](#users)
+  - [Testing](#testing)
+  - [Users](#users)
 
 ## Installation
 
@@ -1171,6 +1182,24 @@ func main() {
 }
 ```
 
+### Serving data from file
+
+```go
+func main() {
+	router := gin.Default()
+
+	router.GET("/local/file", func(c *gin.Context) {
+		c.File("local/file.go")
+	})
+
+	var fs http.FileSystem = // ...
+	router.GET("/fs/file", func(c *gin.Context) {
+		c.FileFromFS("fs/file.go", fs)
+	})
+}
+
+```
+
 ### Serving data from reader
 
 ```go
@@ -1658,12 +1687,13 @@ func main() {
 }
 ```
 
-### Graceful restart or stop
+### Graceful shutdown or restart
 
-Do you want to graceful restart or stop your web server?
-There are some ways this can be done.
+There are a few approaches you can use to perform a graceful shutdown or restart. You can make use of third-party packages specifically built for that, or you can manually do the same with the functions and methods from the built-in packages.
 
-We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer issue [#296](https://github.com/gin-gonic/gin/issues/296) for more details.
+#### Third-party packages
+
+We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer to issue [#296](https://github.com/gin-gonic/gin/issues/296) for more details.
 
 ```go
 router := gin.Default()
@@ -1672,13 +1702,15 @@ router.GET("/", handler)
 endless.ListenAndServe(":4242", router)
 ```
 
-An alternative to endless:
+Alternatives:
 
 * [manners](https://github.com/braintree/manners): A polite Go HTTP server that shuts down gracefully.
 * [graceful](https://github.com/tylerb/graceful): Graceful is a Go package enabling graceful shutdown of an http.Handler server.
 * [grace](https://github.com/facebookgo/grace): Graceful restart & zero downtime deploy for Go servers.
 
-If you are using Go 1.8, you may not need to use this library! Consider using http.Server's built-in [Shutdown()](https://golang.org/pkg/net/http/#Server.Shutdown) method for graceful shutdowns. See the full [graceful-shutdown](https://github.com/gin-gonic/examples/tree/master/graceful-shutdown) example with gin.
+#### Manually
+
+In case you are using Go 1.8 or a later version, you may not need to use those libraries. Consider using `http.Server`'s built-in [Shutdown()](https://golang.org/pkg/net/http/#Server.Shutdown) method for graceful shutdowns. The example below describes its usage, and we've got more examples using gin [here](https://github.com/gin-gonic/examples/tree/master/graceful-shutdown).
 
 ```go
 // +build go1.8
@@ -1709,8 +1741,9 @@ func main() {
 		Handler: router,
 	}
 
+	// Initializing the server in a goroutine so that
+	// it won't block the graceful shutdown handling below
 	go func() {
-		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
@@ -1724,18 +1757,16 @@ func main() {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	log.Println("Shuting down server...")
 
+	// The context is used to inform the server it has 5 seconds to finish
+	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		log.Fatal("Server forced to shutdown:", err)
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
+	
 	log.Println("Server exiting")
 }
 ```
@@ -2026,7 +2057,7 @@ func main() {
 
         if err != nil {
             cookie = "NotSet"
-            c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
+            c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", http.SameSiteLaxMode, false, true)
         }
 
         fmt.Printf("Cookie value: %s \n", cookie)

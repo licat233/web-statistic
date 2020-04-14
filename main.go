@@ -43,7 +43,6 @@ func main() {
 	})
 	if err := Router.Run(":8866"); err != nil {
 		fmt.Println("Gin run failed:", err)
-		return
 	}
 }
 
@@ -92,5 +91,5 @@ func getNewestNum(k string) []byte {
 	rwWDM.RLock()
 	n := rwWDM.data[k]
 	rwWDM.RUnlock()
-	return []byte(string(strconv.Itoa(n)))
+	return []byte(strconv.Itoa(n))
 }
