@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -25,8 +26,6 @@ var (
 	}{
 		data: make(map[string]int),
 	}
-	//CloseClearMap 通知协程关闭
-	CloseClearMap chan byte
 )
 
 func main() {
@@ -43,7 +42,7 @@ func main() {
 		WebSocketHandler(c.Query("weburl"), c.Writer, c.Request)
 	})
 	if err := Router.Run(":8866"); err != nil {
-		fmt.Println("Gin run failed:",err)
+		fmt.Println("Gin run failed:", err)
 		return
 	}
 }
@@ -62,7 +61,7 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 	defer func() {
 		_ = wsSocket.Close()
 	}()
-	////发送在线人数给客户端，相当于2秒检测一遍用户是否还在
+	//发送在线人数给客户端，相当于2秒检测一遍用户是否还在
 	for {
 		if err = wsSocket.WriteMessage(websocket.TextMessage, getNewestNum(clientURL)); err != nil {
 			rwWDM.Lock()
@@ -78,11 +77,11 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 func ClearMap() {
 	for {
 		rwWDM.Lock()
-			for k, v := range rwWDM.data {
-				if v <= 0 {
-					delete(rwWDM.data, k)
-				}
+		for k, v := range rwWDM.data {
+			if v <= 0 {
+				delete(rwWDM.data, k)
 			}
+		}
 		rwWDM.Unlock()
 		time.Sleep(time.Minute * 60)
 	}
