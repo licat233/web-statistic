@@ -77,18 +77,13 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 //ClearMap 协程，用于处理无用的键值对
 func ClearMap() {
 	for {
-		select {
-		case <-CloseClearMap:
-			return
-		default:
-			rwWDM.Lock()
+		rwWDM.Lock()
 			for k, v := range rwWDM.data {
 				if v <= 0 {
 					delete(rwWDM.data, k)
 				}
 			}
-			rwWDM.Unlock()
-		}
+		rwWDM.Unlock()
 		time.Sleep(time.Minute * 60)
 	}
 }
