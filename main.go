@@ -72,7 +72,7 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 	}
 }
 
-//ClearMap 协程，用于处理无用的键值对
+//ClearMap 协程，用于重置Map
 func ClearMap() {
 	for {
 		rwWDM.Lock()
