@@ -76,11 +76,7 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 func ClearMap() {
 	for {
 		rwWDM.Lock()
-		for k, v := range rwWDM.data {
-			if v <= 0 {
-				delete(rwWDM.data, k)
-			}
-		}
+		rwWDM.data = make(map[string]int)
 		rwWDM.Unlock()
 		time.Sleep(time.Minute * 60)
 	}
