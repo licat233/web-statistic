@@ -48,14 +48,14 @@ func main() {
 
 //WebSocketHandler /ws/onlineServer接口函数
 func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Request) {
-	rwWDM.Lock()
-	rwWDM.data[clientURL]++
-	rwWDM.Unlock()
 	// 应答客户端告知升级连接为websocket
 	wsSocket, err := wsUpgrader.Upgrade(resp, req, nil)
 	if err != nil {
 		return
 	}
+	rwWDM.Lock()
+	rwWDM.data[clientURL]++
+	rwWDM.Unlock()
 	//结束后关闭websocket连接
 	defer func() {
 		_ = wsSocket.Close()
