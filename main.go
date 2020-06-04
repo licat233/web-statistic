@@ -29,7 +29,7 @@ var (
 )
 
 func main() {
-	go ClearMap()
+	//go ClearMap()
 	gin.SetMode(gin.ReleaseMode)
 	Router := gin.Default()
 	Router.GET("/ws/onlineServer", func(c *gin.Context) {
@@ -41,7 +41,7 @@ func main() {
 		}
 		WebSocketHandler(c.Query("weburl"), c.Writer, c.Request)
 	})
-	if err := Router.Run(":8866"); err != nil {
+	if err := Router.Run(":8899"); err != nil {
 		fmt.Println("Gin run failed:", err)
 	}
 }
@@ -60,7 +60,7 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 	defer func() {
 		_ = wsSocket.Close()
 	}()
-	//发送在线人数给客户端，相当于2秒检测一遍用户是否还在
+	//发送在线人数给客户端，相当于1秒检测一遍用户是否还在
 	for {
 		if err = wsSocket.WriteMessage(websocket.TextMessage, getNewestNum(clientURL)); err != nil {
 			rwWDM.Lock()
@@ -68,11 +68,11 @@ func WebSocketHandler(clientURL string, resp http.ResponseWriter, req *http.Requ
 			rwWDM.Unlock()
 			return
 		}
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Second * 1)
 	}
 }
 
-//ClearMap 协程，用于重置Map
+//ClearMap 协程，用于重置map
 func ClearMap() {
 	for {
 		rwWDM.Lock()
