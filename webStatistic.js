@@ -8,8 +8,8 @@ window.onload = function () {
 }
 
 function LiteMain() {
-    let ws = new WebSocket("ws://111.229.237.201:8866/ws/onlineServer?weburl="+ getwebURL());
-    new CreateView()
+    let ws = new WebSocket("wss://licat.top/ws/onlineServer?weburl="+ getwebURL());
+    new CreateView();
     const view = document.getElementById("onlineview");
     ws.onmessage = function (evt) {
         view.innerHTML = evt.data + "&nbsp;人正在瀏覽";
@@ -58,3 +58,4 @@ function Safejs() {
 }
 
 new Safejs();
+/*节点ID：onlineview*/ 
